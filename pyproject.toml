@@ -1,0 +1,66 @@
+[project]
+name = "news"
+version = "0.1.0"
+description = "News: topic and location news intelligence service"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "alembic>=1.13",
+    "anthropic>=0.40",
+    "asyncpg>=0.29",
+    "cryptography>=43",
+    "beautifulsoup4>=4.12",
+    "fastapi>=0.115",
+    "fastembed>=0.4",
+    "feedparser>=6.0.11",
+    "httpx>=0.27",
+    "orjson>=3.10",
+    "pgvector>=0.3",
+    "py3langid>=0.3",
+    "pydantic>=2.8",
+    "pyyaml>=6.0",
+    "redis>=5.0",
+    "sqlalchemy[asyncio]>=2.0.30",
+    "tzdata>=2024.1",
+    "uvicorn[standard]>=0.30",
+]
+
+[project.scripts]
+news = "news.cli:main"
+
+# Connector types are discovered through this entry-point group, so a new
+# source type can ship as its own package.
+[project.entry-points."news.connectors"]
+rss = "news.connectors.rss:RssConnector"
+manual = "news.connectors.manual:ManualConnector"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.11",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "respx>=0.21",
+    "types-PyYAML>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/news"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["feedparser", "feedparser.*", "py3langid", "py3langid.*", "fastembed", "fastembed.*", "pgvector", "pgvector.*"]
+ignore_missing_imports = true

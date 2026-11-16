@@ -1,0 +1,114 @@
+name: news
+
+# Postgres and Redis are only reachable inside this network. The API listens
+# on 127.0.0.1:3012 for nginx (news.new.vote).
+
+x-app: &app
+  build: .
+  image: news-app
+  restart: unless-stopped
+  env_file: .env
+  environment:
+    NEWS_DATABASE_URL: postgresql+asyncpg://news:${POSTGRES_PASSWORD}@db:5432/news
+    NEWS_TEST_DATABASE_URL: postgresql+asyncpg://news:${POSTGRES_PASSWORD}@db:5432/news_test
+    NEWS_REDIS_URL: redis://redis:6379/0
+    NEWS_TEST_REDIS_URL: redis://redis:6379/15
+    NEWS_CONFIG_DIR: /app/config
+  volumes:
+    - ./config:/app/config
+    - models:/models
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_started
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: docker/db.Dockerfile
+    image: news-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: news
+      POSTGRES_USER: news
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    command: postgres -c shared_buffers=128MB -c max_connections=60
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U news -d news"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 768m
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy noeviction
+    volumes:
+      - redisdata:/data
+    mem_limit: 192m
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: news migrate
+
+  api:
+    <<: *app
+    command: news api
+    ports:
+      - "127.0.0.1:3012:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    mem_limit: 768m
+
+  ingest:
+    <<: *app
+    command: news worker ingest
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    mem_limit: 256m
+
+  normalise:
+    <<: *app
+    command: news worker normalise
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    mem_limit: 256m
+
+  stories:
+    <<: *app
+    command: news worker stories
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    mem_limit: 768m
+
+  enrich:
+    <<: *app
+    command: news worker enrich
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    mem_limit: 640m
+
+  deliver:
+    <<: *app
+    command: news worker deliver
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    mem_limit: 384m
+
+volumes:
+  dbdata:
+  redisdata:
+  models:

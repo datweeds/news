@@ -1,0 +1,22 @@
+# General service settings. Admin API: PUT /v1/admin/settings/app
+
+# Deduplication: an item is a duplicate of one seen in the last
+# dedup_window_days with the same canonical URL, or whose SimHash differs by
+# at most simhash_max_distance bits (0-3).
+dedup_window_days: 7
+simhash_max_distance: 3
+
+# Only a short snippet of each item's text is stored, never the full article.
+snippet_max_chars: 500
+
+# Polling. No source is polled more often than min_poll_interval seconds;
+# Substack feeds no more than every substack_min_poll_interval seconds.
+min_poll_interval: 60
+substack_min_poll_interval: 1800
+ingest_concurrency: 5
+
+# A source failing continuously for this long is disabled, with an alert.
+source_auto_disable_hours: 24
+
+# Requests per minute allowed for each API key.
+api_rate_limit_per_min: 120

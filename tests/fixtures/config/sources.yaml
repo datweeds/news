@@ -1,0 +1,14 @@
+sources:
+  - name: test-news
+    type: rss
+    trust_weight: 0.8
+    poll_interval: 600
+    config:
+      url: https://news.example.com/rss.xml
+
+  - name: test-substack
+    type: rss
+    poll_interval: 300
+    config:
+      url: https://writer.substack.com/feed
+      platform: substack

@@ -1,0 +1,41 @@
+# LLM use. Changes made through the admin API (PUT /v1/admin/settings/llm)
+# take effect within 30 seconds and win over this file; `news config export`
+# writes them back here.
+
+# off  - never call the LLM. Items are still collected, deduplicated and
+#        grouped into stories; digests use the outlets' own headlines.
+# on   - enrich everything relevant, within the daily budget.
+# auto - use the LLM only while someone is reading: at least one active
+#        subscription opened in the last auto_reader_window_days.
+mode: auto
+
+# Hard daily cap across all LLM tasks, in US dollars (UTC day). When reached,
+# the LLM pauses until midnight UTC and everything else carries on.
+daily_budget_usd: 1.00
+
+auto_reader_window_days: 7
+
+# Items still unenriched after this long are skipped, so switching the LLM
+# back on doesn't spend money on stale news.
+backlog_max_age_hours: 48
+
+# Model per task. Prices (USD per million tokens) are used to enforce the
+# budget, so keep them in line with the provider's price list.
+tasks:
+  extract:          # per item: topics, places, entities, significance (batched)
+    provider: anthropic
+    model: claude-haiku-5-5
+    input_usd_per_mtok: 1.0
+    output_usd_per_mtok: 5.0
+    api_key_env: ANTHROPIC_API_KEY
+    max_tokens: 3000
+  digest_writer:    # once per digest: overview, story titles, summaries, why it matters
+    provider: anthropic
+    model: claude-haiku-5-5
+    input_usd_per_mtok: 1.0
+    output_usd_per_mtok: 5.0
+    api_key_env: ANTHROPIC_API_KEY
+    max_tokens: 4000
+
+extract_batch_size: 10
+timeout_s: 90

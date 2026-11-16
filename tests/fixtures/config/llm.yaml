@@ -1,0 +1,5 @@
+mode: auto
+daily_budget_usd: 1.0
+tasks:
+  extract: {provider: fake, model: fake-small, input_usd_per_mtok: 1.0, output_usd_per_mtok: 5.0}
+  digest_writer: {provider: fake, model: fake-small, input_usd_per_mtok: 1.0, output_usd_per_mtok: 5.0}

@@ -1,0 +1,251 @@
+# Source instances. Adding a source is a config change (or POST
+# /v1/admin/sources). On startup, sources not yet in the database are added;
+# existing ones are left as they are unless `news config reload --overwrite`.
+# Secrets are written as ${ENV_NAME} and resolved when the source runs; they
+# are never stored in the database.
+#
+# Fields: name, type, enabled, trust_weight (0-1), default_topics,
+# poll_interval (seconds), rate_limit_per_min, monthly_budget_usd (paid
+# sources), config (validated against the connector type's schema; see
+# GET /v1/admin/sources/types).
+
+# Mainstream outlets plus independent and alternative sources across the
+# political spectrum (added and tested 2026-11-16). Trust weights are a
+# starting point for tuning, not a judgement of viewpoint.
+
+sources:
+- name: bbc-science-environment
+  type: rss
+  enabled: true
+  trust_weight: 0.8
+  poll_interval: 600
+  config:
+    url: https://feeds.bbci.co.uk/news/science_and_environment/rss.xml
+- name: bbc-scotland
+  type: rss
+  enabled: true
+  trust_weight: 0.8
+  poll_interval: 600
+  config:
+    url: https://feeds.bbci.co.uk/news/scotland/rss.xml
+- name: bella-caledonia
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://bellacaledonia.org.uk/feed/
+- name: byline-times
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://bylinetimes.com/feed/
+- name: carbon-brief
+  type: rss
+  enabled: true
+  trust_weight: 0.8
+  poll_interval: 1800
+  config:
+    url: https://www.carbonbrief.org/feed/
+- name: cleantechnica
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://cleantechnica.com/feed/
+- name: climate-etc
+  type: rss
+  enabled: false
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://judithcurry.com/feed/
+- name: climate-home-news
+  type: rss
+  enabled: true
+  trust_weight: 0.75
+  poll_interval: 1800
+  config:
+    url: https://www.climatechangenews.com/feed/
+- name: conservative-home
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://conservativehome.com/feed/
+- name: daily-business-scotland
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://dailybusinessgroup.co.uk/feed/
+- name: desmog
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://www.desmog.com/feed/
+- name: full-fact
+  type: rss
+  enabled: true
+  trust_weight: 0.8
+  poll_interval: 1800
+  config:
+    url: https://fullfact.org/feed/
+- name: guardian-environment
+  type: rss
+  enabled: true
+  trust_weight: 0.8
+  poll_interval: 900
+  config:
+    url: https://www.theguardian.com/environment/rss
+- name: hrw
+  type: rss
+  enabled: true
+  trust_weight: 0.75
+  poll_interval: 1800
+  config:
+    url: https://www.hrw.org/rss/news
+- name: ian-dunt
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://iandunt.substack.com/feed
+    platform: substack
+- name: inside-climate-news
+  type: rss
+  enabled: true
+  trust_weight: 0.7
+  poll_interval: 1800
+  config:
+    url: https://insideclimatenews.org/feed/
+- name: left-foot-forward
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://leftfootforward.org/feed/
+- name: liberty
+  type: rss
+  enabled: true
+  trust_weight: 0.7
+  poll_interval: 1800
+  config:
+    url: https://www.libertyhumanrights.org.uk/feed/
+- name: net-zero-watch
+  type: rss
+  enabled: true
+  trust_weight: 0.4
+  poll_interval: 1800
+  config:
+    url: https://www.netzerowatch.com/all-news?format=rss
+- name: novara-media
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://novaramedia.com/feed/
+- name: opendemocracy
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://www.opendemocracy.net/en/feed/
+- name: phys-org-earth
+  type: rss
+  enabled: true
+  trust_weight: 0.7
+  poll_interval: 1800
+  config:
+    url: https://phys.org/rss-feed/earth-news/
+- name: sam-freedman
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://samf.substack.com/feed
+    platform: substack
+- name: sciencedaily-climate
+  type: rss
+  enabled: true
+  trust_weight: 0.7
+  poll_interval: 1800
+  config:
+    url: https://www.sciencedaily.com/rss/earth_climate.xml
+- name: spiked
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://www.spiked-online.com/feed/
+- name: the-canary
+  type: rss
+  enabled: true
+  trust_weight: 0.4
+  poll_interval: 1800
+  config:
+    url: https://www.thecanary.co/feed/
+- name: the-climate-brink
+  type: rss
+  enabled: true
+  trust_weight: 0.7
+  poll_interval: 1800
+  config:
+    url: https://www.theclimatebrink.com/feed
+    platform: substack
+- name: the-conversation-uk
+  type: rss
+  enabled: true
+  trust_weight: 0.75
+  poll_interval: 1800
+  config:
+    url: https://theconversation.com/uk/articles.atom
+- name: the-critic
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://thecritic.co.uk/feed/
+- name: the-honest-broker
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://rogerpielkejr.substack.com/feed
+    platform: substack
+- name: think-scotland
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://www.thinkscotland.org/feed/
+- name: unherd
+  type: rss
+  enabled: true
+  trust_weight: 0.6
+  poll_interval: 1800
+  config:
+    url: https://unherd.com/feed/
+- name: wings-over-scotland
+  type: rss
+  enabled: true
+  trust_weight: 0.5
+  poll_interval: 1800
+  config:
+    url: https://wingsoverscotland.com/feed/

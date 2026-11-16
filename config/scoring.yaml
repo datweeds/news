@@ -1,0 +1,47 @@
+# Stories, importance and digest rules. Admin API: PUT /v1/admin/settings/scoring
+
+# Importance (0-100) = weighted sum of these signals (each 0-1), times decay
+# and penalties, plus any moderator boost.
+weights:
+  significance: 0.25   # the LLM's judgement, weighted by source trust (0.5 when not enriched)
+  corroboration: 0.20  # independent outlets carrying the story
+  velocity: 0.15       # coverage in the last 3 hours against the story's own pace
+  breadth: 0.10        # distinct sources
+  novelty: 0.15        # new event, update, or rehash
+  evidence: 0.15       # peer-reviewed > news > preprint > social
+half_life_h: 18          # news decays to half importance after this long without new coverage
+science_half_life_h: 72  # papers and preprints
+evidence: {paper: 1.0, preprint: 0.7, news: 0.8, social: 0.4, manual: 0.8}
+promotional_penalty: 0.5
+single_source_social_penalty: 0.6
+
+# Grouping items into stories. Embedding similarity alone measures topic more
+# than event, so an item joins a story when similarity is very high, or lower
+# but with shared names (capitalised words) that are rare in recent news:
+story_similarity: 0.88            # join on similarity alone
+story_one_name_similarity: 0.80   # join with one shared rare name
+story_two_names_similarity: 0.70  # join with two or more shared rare names
+rare_name_max_share: 0.015        # a name is rare if in at most 1.5% of recent items
+story_window_h: 72
+merge_similarity: 0.90
+dormant_after_h: 72
+archive_after_days: 14
+
+# Relevance to a subscription section: similarity below topic_floor counts
+# nothing, at topic_full and above counts fully.
+topic_floor: 0.55
+topic_full: 0.75
+mentioned_location: 0.6  # place mentioned but not the main subject
+unknown_location: 0.5    # story's places not known (e.g. LLM off)
+taxonomy_match: 0.75     # similarity needed to map a free-text topic onto the taxonomy
+
+# Digest defaults; each subscription can set its own min_score, max_items, max_per_section
+min_score: 35
+max_items: 12
+max_per_section: 4
+max_source_type_share: 0.4
+resend_rise: 15          # a story is sent again only as an update, after rising this much
+
+# Cost control for enrichment
+enrich_relevance_gate: 0.6     # only enrich items this similar to some subscription phrase (0.5 let almost everything through)
+enrich_max_items_per_story: 3

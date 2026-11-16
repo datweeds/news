@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Example News</title>
+    <link>https://news.example.com/</link>
+    <language>en-gb</language>
+    <item>
+      <title>Scottish Government announces new heat pump grants for rural homes</title>
+      <link>https://news.example.com/2026/11/heat-pump-grants?utm_source=rss&amp;utm_medium=feed</link>
+      <guid>https://news.example.com/2026/11/heat-pump-grants</guid>
+      <pubDate>Sun, 15 Nov 2026 09:00:00 GMT</pubDate>
+      <description><![CDATA[<p>Households in rural Scotland will be able to claim up to <b>£9,000</b> towards a heat pump under a scheme announced on Sunday by the net zero secretary, who said the grants would open in January.</p>]]></description>
+    </item>
+    <item>
+      <title>Edinburgh trams extension approved by council</title>
+      <link>https://news.example.com/2026/11/trams</link>
+      <guid>https://news.example.com/2026/11/trams</guid>
+      <pubDate>Sun, 15 Nov 2026 08:00:00 GMT</pubDate>
+      <description>The City of Edinburgh Council has approved plans to extend the tram line north to Granton, with construction expected to start in 2028.</description>
+    </item>
+    <item>
+      <title>New study finds peatland restoration cuts emissions faster than expected</title>
+      <link>https://news.example.com/2026/11/peatland</link>
+      <guid>https://news.example.com/2026/11/peatland</guid>
+      <pubDate>Sat, 14 Nov 2026 16:30:00 GMT</pubDate>
+      <description>Researchers measuring restored peat bogs in the Flow Country found carbon emissions fell within three years, faster than models had predicted.</description>
+    </item>
+  </channel>
+</rss>

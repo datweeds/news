@@ -1,0 +1,19 @@
+# Topic taxonomy. Each topic has a slug, a short label, and a description of
+# one or two sentences. The description is what News uses to judge whether a
+# story is about this topic, so say what belongs here and what doesn't.
+# Topics can nest with `children`.
+#
+# Example:
+#
+# topics:
+#   - slug: energy
+#     label: Energy
+#     description: How energy is produced, priced and used, including policy.
+#     children:
+#       - slug: heat-pumps
+#         label: Heat pumps
+#         description: >
+#           Domestic and commercial heat pumps: grants, installation, costs,
+#           performance and policy. Not general home insulation.
+
+topics: []

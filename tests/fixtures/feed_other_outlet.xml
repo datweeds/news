@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Other Outlet</title>
+    <link>https://other.example.org/</link>
+    <item>
+      <title>Scottish Government announces new heat pump grants for rural homes</title>
+      <link>https://other.example.org/news/heat-pumps-rural</link>
+      <guid>other-1</guid>
+      <pubDate>Sun, 15 Nov 2026 09:20:00 GMT</pubDate>
+      <description>Households in rural Scotland will be able to claim up to £9,000 towards a heat pump under a scheme announced on Sunday by the net zero secretary, who said the grants would open in January.</description>
+    </item>
+    <item>
+      <title>Same story, syndicated link</title>
+      <link>https://www.news.example.com/2026/11/trams/?fbclid=abc123</link>
+      <guid>other-2</guid>
+      <pubDate>Sun, 15 Nov 2026 08:30:00 GMT</pubDate>
+      <description>A different summary of the tram decision.</description>
+    </item>
+  </channel>
+</rss>

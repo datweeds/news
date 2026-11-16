@@ -1,0 +1,8 @@
+# The fake embedder's bag-of-words similarities run lower than the real
+# model's, so tests use lower relevance thresholds.
+topic_floor: 0.2
+topic_full: 0.4
+story_similarity: 0.75
+story_one_name_similarity: 0.6
+story_two_names_similarity: 0.5
+rare_name_max_share: 1.0
