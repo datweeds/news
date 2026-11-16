@@ -156,3 +156,7 @@ docker compose run --rm api mypy src
 
 Tests use recorded fixtures and never call the live network; database tests
 use the `news_test` database.
+
+## Licence
+
+Proprietary. Copyright (c) 2026 Debate Report Limited. All rights reserved. See [LICENSE](LICENSE).
