@@ -88,9 +88,13 @@ class FakeClient:
         self._model = cfg.model
 
     async def complete(self, system: str, prompt: str, max_tokens: int) -> LLMResult:
-        if "<item " in prompt:
+        if "<paper " in prompt:
+            ids = re.findall(r'<paper id="(\d+)"', prompt)
+            out: Any = {"papers": [{"id": i, "summary": f"Researchers found something notable (paper {i})."}
+                                   for i in ids]}
+        elif "<item " in prompt:
             ids = re.findall(r'<item id="(\d+)"', prompt)
-            out: Any = {"items": [{
+            out = {"items": [{
                 "id": int(i), "topics": ["energy policy"], "entities": [{"name": "Scottish Government", "type": "org"}],
                 "locations": [{"name": "Scotland", "country": "GB", "role": "primary"}],
                 "significance": 0.7, "novelty": "new", "promotional": False,

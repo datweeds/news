@@ -18,7 +18,7 @@ from sqlalchemy import select
 from news.audit import SYSTEM, audit
 from news.config import AppSettings
 from news.connectors.http import SafeHttp
-from news.connectors.registry import build_connector, connector_types
+from news.connectors.registry import build_connector, connector_types, research_phrases, uses_phrases
 from news.db.engine import sessionmaker
 from news.db.models import SourceInstance
 from news.env import env
@@ -64,7 +64,8 @@ async def run_source(source_id: uuid.UUID, http: SafeHttp, r: Redis) -> int:
         count = 0
         started = now()
         try:
-            connector, ctx = build_connector(src, http)
+            phrases = await research_phrases(session) if uses_phrases(src.type) else None
+            connector, ctx = build_connector(src, http, phrases=phrases)
             async for item in connector.fetch():
                 await publish(r, RAW, item.model_dump(mode="json"))
                 count += 1

@@ -37,7 +37,7 @@ class ModelConfig(BaseModel):
     max_tokens: int = Field(3000, ge=100, le=16000)
 
 
-LLM_TASKS = ("extract", "digest_writer")
+LLM_TASKS = ("extract", "digest_writer", "paper_summary")
 
 
 def _default_tasks() -> dict[str, ModelConfig]:
@@ -113,6 +113,11 @@ class ScoringSettings(BaseModel):
     max_per_section: int = Field(4, ge=1, le=20)
     max_source_type_share: float = Field(0.4, gt=0, le=1)
     resend_rise: int = Field(15, ge=0, le=100)
+    # Research papers (OpenAlex): published within papers_days, matching a
+    # section's phrases at least paper_floor, at most papers_max per edition
+    papers_days: int = Field(90, ge=1, le=365)
+    papers_max: int = Field(5, ge=1, le=20)
+    paper_floor: float = Field(0.6, ge=0, le=1)
     # Enrichment cost control
     enrich_relevance_gate: float = Field(0.6, ge=0, le=1)
     enrich_max_items_per_story: int = Field(3, ge=1, le=50)

@@ -33,7 +33,7 @@ def redis_client(url: str | None = None) -> Redis:
                           health_check_interval=30)
 
 
-async def publish(r: Redis, stream: str, payload: dict[str, Any], maxlen: int = 200_000) -> None:
+async def publish(r: Redis, stream: str, payload: dict[str, Any], maxlen: int = 20_000) -> None:
     await r.xadd(stream, {"d": orjson.dumps(payload)}, maxlen=maxlen, approximate=True)
 
 

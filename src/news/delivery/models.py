@@ -93,6 +93,10 @@ class SubscriptionDef(BaseModel):
     # False: no LLM for this subscription. Editions use the outlets' own
     # headlines, and its phrases don't make items eligible for enrichment.
     use_llm: bool = True
+    # Scientific papers and preprints (published in the last 90 days) that match
+    # the sections' phrases, in a research part of each edition; each paper once
+    include_papers: bool = False
+    max_papers: int | None = Field(None, ge=1, le=20)
 
     @model_validator(mode="after")
     def _unique_keys(self) -> SubscriptionDef:

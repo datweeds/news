@@ -172,6 +172,8 @@ async def cluster_pending(session: AsyncSession, cfg: ScoringSettings, batch: in
         FROM items i
         WHERE NOT EXISTS (SELECT 1 FROM cluster_items ci WHERE ci.item_id = i.id)
           AND (i.embedding IS NOT NULL OR i.duplicate_of IS NOT NULL)
+          -- Research papers found by search go to editions' research section, not into stories
+          AND NOT (i.raw ? 'openalex_id')
         ORDER BY i.ingested_at
         LIMIT :n
     """), {"n": batch})).all()

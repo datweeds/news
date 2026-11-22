@@ -57,3 +57,6 @@ class ConnectorContext:
     cursor: CursorStore = field(default_factory=CursorStore)
     limiter: RateLimiter = field(default_factory=lambda: RateLimiter(None))
     log: logging.Logger = field(default_factory=lambda: logging.getLogger("news.connector"))
+    # Search phrases of the subscriptions that want this source's items, for
+    # connectors that search rather than read a feed (uses_subscription_phrases)
+    phrases: list[str] = field(default_factory=list)

@@ -6,3 +6,4 @@ story_similarity: 0.75
 story_one_name_similarity: 0.6
 story_two_names_similarity: 0.5
 rare_name_max_share: 1.0
+paper_floor: 0.2

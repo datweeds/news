@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from news.config import LlmSettings, ScoringSettings
 from news.db.models import Delivery, Digest, DigestItem, Subscription, SubscriptionPhrase
 from news.delivery.digest import PhraseVectors, add_extras, build, item_payload
+from news.delivery import papers as research
 from news.delivery.models import ScheduleDef, SubscriptionDef
 from news.delivery.schedule import edition_date, window_hours
 from news.delivery.writer import write
@@ -51,7 +52,7 @@ async def load_phrases(session: AsyncSession, subscription_id: uuid.UUID) -> Phr
 
 
 def digest_payload(digest: Digest, sub: Subscription, sub_def: SubscriptionDef, schedule: ScheduleDef,
-                   items: list[dict[str, Any]]) -> dict[str, Any]:
+                   items: list[dict[str, Any]], papers: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     return {
         "id": str(digest.id),
         "subscription_id": str(sub.id),
@@ -65,6 +66,7 @@ def digest_payload(digest: Digest, sub: Subscription, sub_def: SubscriptionDef, 
         "llm_written": digest.llm_written,
         "sections": [{"key": s.key, "heading": s.heading} for s in sub_def.sections],
         "items": items,
+        "papers": papers or [],
         "created_at": datetime.now(UTC).isoformat(),
     }
 
@@ -80,9 +82,10 @@ async def produce(session: AsyncSession, sub: Subscription, now: datetime | None
     scoring = await get_settings(session, ScoringSettings)
     llm = await get_settings(session, LlmSettings)
 
-    draft = await build(session, sub_def, scoring, await load_phrases(session, sub.id),
-                        window_hours(schedule), subscription_id=sub.id, now=now)
-    if not draft.items and not sub_def.send_empty and not force:
+    phrases = await load_phrases(session, sub.id)
+    draft = await build(session, sub_def, scoring, phrases, window_hours(schedule), subscription_id=sub.id, now=now)
+    papers = await research.choose(session, sub_def, phrases, scoring, subscription_id=sub.id, now=now)
+    if not draft.items and not papers and not sub_def.send_empty and not force:
         log.info("nothing to send", extra={"subscription": str(sub.id)})
         return None
     headings = {s.key: s.heading for s in sub_def.sections}
@@ -91,14 +94,18 @@ async def produce(session: AsyncSession, sub: Subscription, now: datetime | None
     else:
         overview, llm_written, items = None, False, draft.items
     await add_extras(session, items)
+    if papers and sub_def.use_llm:
+        await research.summarise(session, llm, sub_def.name, papers, sub)
 
     digest = Digest(id=uuid7(), subscription_id=sub.id, edition_date=edition_date(schedule, now),
                     window_start=draft.window_start, window_end=draft.window_end, overview=overview,
                     llm_written=llm_written, status="ready", payload={})
     payload_items = [item_payload(c, headings) for c in items]
-    digest.payload = digest_payload(digest, sub, sub_def, schedule, payload_items)
+    digest.payload = digest_payload(digest, sub, sub_def, schedule, payload_items,
+                                    [research.payload(p, headings) for p in papers])
     session.add(digest)
     await session.flush()
+    await research.record_sent(session, sub.id, digest.id, papers)
     for n, c in enumerate(items):
         session.add(DigestItem(digest_id=digest.id, cluster_id=c.cluster_id, position=n, section_key=c.section_key,
                                is_headline=c.is_headline, is_update=c.is_update, score=c.score,
@@ -107,7 +114,7 @@ async def produce(session: AsyncSession, sub: Subscription, now: datetime | None
         session.add(Delivery(digest_id=digest.id, method="webhook", next_retry_at=now))
     await session.commit()
     log.info("digest produced", extra={"subscription": str(sub.id), "digest": str(digest.id),
-                                       "items": len(items), "llm_written": llm_written})
+                                       "items": len(items), "papers": len(papers), "llm_written": llm_written})
     return digest
 
 

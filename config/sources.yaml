@@ -249,3 +249,20 @@ sources:
   poll_interval: 1800
   config:
     url: https://wingsoverscotland.com/feed/
+# Scientific papers and preprints (added 2026-11-18). Searched, not read as a
+# feed: each search phrase of subscriptions with include_papers, at most once a
+# day, for works published in the last 90 days. Papers go to editions' research
+# section, not into news stories.
+- name: openalex-research
+  type: openalex
+  enabled: true
+  trust_weight: 0.9
+  poll_interval: 3600
+  rate_limit_per_min: 60
+  config:
+    days: 90
+    per_phrase: 15
+    research_hours: 24
+    mailto: contact@new.vote
+    # Free key (OpenAlex account david.twaddell@pm.me), kept in .env
+    api_key: ${OPENALEX_API_KEY}

@@ -21,6 +21,7 @@ from news.api.pagination import decode_cursor, encode_cursor, page
 from news.audit import Actor, audit
 from news.config import ScoringSettings
 from news.db.models import Cluster, Digest, Feedback, Subscription, SubscriptionOverride
+from news.delivery import papers as research
 from news.delivery.digest import PhraseVectors, add_extras, build, item_payload
 from news.delivery.models import ScheduleDef, SubscriptionDef
 from news.delivery.produce import embed_phrases, load_phrases, produce, save_phrases
@@ -178,6 +179,7 @@ async def _preview(session: Session, sub_def: SubscriptionDef, schedule: Schedul
                 "topic_factor": c.topic_factor, "location_factor": round(c.location_factor, 2)}
 
     items = [explain(c) for c in draft.items]
+    papers = await research.choose(session, sub_def, phrases, cfg, subscription_id=subscription_id)
     return {
         "window_hours": window_h,
         "min_score": sub_def.min_score if sub_def.min_score is not None else cfg.min_score,
@@ -189,6 +191,9 @@ async def _preview(session: Session, sub_def: SubscriptionDef, schedule: Schedul
                          "score": round(c.score, 1), "relevance": c.relevance, "topic_similarity": c.topic_similarity,
                          "location_factor": round(c.location_factor, 2), "reason": c.reason} for c in draft.near_misses],
         "phrases": await phrase_feedback(session, sub_def, phrases, window_h, cfg),
+        # Research already found for any subscription; papers for new phrases are
+        # searched within the hour after the subscription is saved
+        "papers": [research.payload(p, headings) for p in papers],
         "note": "A preview uses the outlets' own headlines and snippets. Real editions are written up by the "
                 "LLM when it is switched on.",
     }

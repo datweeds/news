@@ -33,6 +33,7 @@ news = "news.cli:main"
 [project.entry-points."news.connectors"]
 rss = "news.connectors.rss:RssConnector"
 manual = "news.connectors.manual:ManualConnector"
+openalex = "news.connectors.openalex:OpenAlexConnector"
 
 [dependency-groups]
 dev = [
